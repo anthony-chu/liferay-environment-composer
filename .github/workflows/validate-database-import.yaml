@@ -1,12 +1,51 @@
 jobs:
-    validate-database-import:
+    generate-matrix:
+        needs: setup
+        outputs:
+            files_json: ${{ steps.set-matrix.output.files }}
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v4
-            -   uses: actions/setup-java@v4
+            -   name: Restore cache
+                uses: actions/cache/restore@v4
                 with:
-                    distribution: zulu
-                    java-version: "21"
-            -   run: ./test-database-import.sh
-name: Validate database import
-on: [workflow_dispatch]
+                    key:  ${{ runner.os }}-assets-${{ hashFiles$('./test-database-import.sh') }}
+                    path: testDependencies
+            -   id: set-matrix
+                name: Create JSON list
+                run: |
+                    FILES_JSON=$(find testDependencies/ -type f -not -path "*/.*"  | sed "s@testDependencies/@@" | jq -Rsc 'split("\n")[:-1]')
+                    echo "files=${FILES_JSON}" >> ${GITHUB_OUTPUT}
+    setup:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   id: cache-test-files
+                name: Cache test files
+                uses: actions/cache@v4
+                with:
+                    key: ${{ runner.os }}-assets-${{ hashFiles('./test-database-import.sh') }}
+                    path: testDependencies/
+            -   id: download-test-files
+                if: steps.cache-test-files.outputs.cache-hit != 'true'
+                name: Download test files
+                run: |
+                    chmod +x test-database-import.sh
+                    ./test-database-import.sh _download_database_dumps
+    test:
+        needs: generate-matrix
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   name: Restore cache
+                uses: actions/cache/restore@v4
+                with:
+                    fail-on-cache-miss: true
+                    key: ${{ runner.os }}-assets-${{ hasFiles('test-database-import.sh') }}
+                    path: testDependencies
+            -   name: Validate database import
+                run: ./test-database-import.sh _test_import_dump ${{ matrix.filename }}
+        strategy:
+            matrix:
+                filename: ${{ fromJson(needs.generate-matrix.output.files_json) }}
+on: [pull_request]
