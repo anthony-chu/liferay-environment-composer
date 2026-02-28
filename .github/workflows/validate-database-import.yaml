@@ -1,21 +1,4 @@
 jobs:
-    generate-matrix:
-        needs: setup
-        outputs:
-            files_json: ${{ steps.set-matrix.output.files }}
-        runs-on: ubuntu-latest
-        steps:
-            -   uses: actions/checkout@v4
-            -   name: Restore cache
-                uses: actions/cache/restore@v4
-                with:
-                    key:  ${{ runner.os }}-assets-${{ hashFiles$('./test-database-import.sh') }}
-                    path: testDependencies
-            -   id: set-matrix
-                name: Create JSON list
-                run: |
-                    FILES_JSON=$(find testDependencies/ -type f -not -path "*/.*"  | sed "s@testDependencies/@@" | jq -Rsc 'split("\n")[:-1]')
-                    echo "files=${FILES_JSON}" >> ${GITHUB_OUTPUT}
     setup:
         runs-on: ubuntu-latest
         steps:
@@ -32,6 +15,23 @@ jobs:
                 run: |
                     chmod +x test-database-import.sh
                     ./test-database-import.sh _download_database_dumps
+                    echo "files=${FILES_JSON}" >> ${GITHUB_OUTPUT}
+    generate-matrix:
+        needs: setup
+        outputs:
+            files_json: ${{ steps.set-matrix.output.files }}
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   name: Restore cache
+                uses: actions/cache/restore@v4
+                with:
+                    key:  ${{ runner.os }}-assets-${{ hashFiles$('./test-database-import.sh') }}
+                    path: testDependencies
+            -   id: set-matrix
+                name: Create JSON list
+                run: |
+                    FILES_JSON=$(find testDependencies/ -type f -not -path "*/.*"  | sed "s@testDependencies/@@" | jq -Rsc 'split("\n")[:-1]')
     test:
         needs: generate-matrix
         runs-on: ubuntu-latest
