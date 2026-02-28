@@ -70,33 +70,4 @@ _test_import_dump() {
 	done
 }
 
-_clean_dumps_dir
-
-if [[ "${CI}" == true ]]; then
-	_download_database_dumps
-fi
-
-# General archive tests
-
-_test_import_dump archives/mysql/lportal_mysql.gz
-_test_import_dump archives/mysql/lportal_mysql.sql.7z
-_test_import_dump archives/mysql/lportal_mysql.sql.bz2
-_test_import_dump archives/mysql/lportal_mysql.sql.gz
-_test_import_dump archives/mysql/lportal_mysql.sql.tar.bz2
-_test_import_dump archives/mysql/lportal_mysql.sql.tar.gz
-_test_import_dump archives/mysql/lportal_mysql.sql.tbz
-_test_import_dump archives/mysql/lportal_mysql.sql.tgz
-_test_import_dump archives/mysql/lportal_mysql.sql.zip
-_test_import_dump archives/mysql/lportal_mysql_encrypted.sql.7z
-_test_import_dump archives/mysql/lportal_mysql_encrypted.sql.zip
-
-# Database specific tests
-
-_test_import_dump archives/sqlserver/lportal.bak.gz
-_test_import_dump archives/db2/db2move_lst.tar.gz
-_test_import_dump archives/db2/LPORTAL.0.db2admin.DBPART000.20260130234412.001.7z
-_test_import_dump raw/mariadb/lportal_mariadb.sql
-_test_import_dump raw/mysql/lportal_mysql.sql
-_test_import_dump raw/postgres/lportal_psql.dump
-_test_import_dump raw/postgres/lportal_psql.sql
-_test_import_dump raw/sqlserver/lportal.bacpac
+${@}
