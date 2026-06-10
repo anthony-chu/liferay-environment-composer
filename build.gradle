@@ -454,6 +454,7 @@ dockerCompose {
 	projectName = config.namespace
 	removeVolumes = config.clearVolumeData
 	useComposeFiles = config.composeFiles
+	waitForHealthyStateTimeout = java.time.Duration.ofMinutes(180)
 	waitForTcpPorts = false
 
 	// DEBUG: Set to true if container startup is failing
