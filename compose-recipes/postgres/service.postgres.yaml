@@ -4,11 +4,15 @@ services:
             args:
                 POSTGRES_VERSION: ${POSTGRES_VERSION}
             context: ./compose-recipes/postgres
+        command:
+            -   postgres
+            -   -c
+            -   max_connections=500
         container_name: ${NAMESPACE}-database-postgres
         deploy:
             resources:
                 limits:
-                    memory: 1G
+                    memory: 4G
                 reservations:
                     memory: 1G
         environment:
