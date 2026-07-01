@@ -509,8 +509,8 @@ ext {
 	}
 
 	updateDatabaseForLocalDevelopment = {
-		forEachCompanyId {
-			String companyId, String hostname, String webId, String schema ->
+		Closure sanitizeSchema = {
+			String schema ->
 
 			replaceUserPasswords(schema)
 			clearSingleSignOnConfigurations(schema)
@@ -518,6 +518,17 @@ ext {
 			disableUserObjectValidations(schema)
 			sanitizeMailConfigurations(schema)
 			deleteMeantForProductionOnlyConfigurations(schema)
+		}
+
+		if (config.databasePartitioningEnabled)	{
+			forEachCompanyId {
+				String companyId, String hostname, String webId, String schema ->
+
+				sanitizeSchema(schema)
+			}
+		}
+		else {
+			sanitizeSchema(config.databaseName)
 		}
 
 		updateVirtualHosts()
