@@ -434,10 +434,6 @@ config.serviceVersions.each {
 	}
 }
 
-if (config.services.contains("elasticsearch")) {
-	environmentMap.put("ELASTICSEARCH_MAJOR_VERSION", config.elasticsearchMajorVersion)
-}
-
 file('.env').withOutputStream {
 	BufferedOutputStream envFileOutputStream ->
 

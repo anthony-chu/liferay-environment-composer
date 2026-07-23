@@ -343,13 +343,11 @@ class Config {
 
 		if (this.services.contains("elasticsearch")) {
 			String elasticsearchVersion = this.serviceVersions["elasticsearch"]
-			String elasticsearchMajorVersion = elasticsearchVersion.split("\\.")[0]
+			String elasticsearchServiceMajorVersion = elasticsearchVersion.split("\\.")[0]
 
-			if (!(elasticsearchMajorVersion in ["7", "8"])) {
+			if (!(elasticsearchServiceMajorVersion in ["7", "8"])) {
 				throw new GradleException("Unsupported Elasticsearch version: ${elasticsearchVersion}. Supported major versions: 7, 8.")
 			}
-
-			this.elasticsearchMajorVersion = elasticsearchMajorVersion
 		}
 
 		if (this.dockerImageLiferay.contains("7.4") || this.dockerImageLiferay.contains(".q")) {
@@ -482,7 +480,6 @@ class Config {
 	public String dlStorePath = null
 	public String dockerImageLiferay = null
 	public boolean dockerImageLiferayDXP = false
-	public String elasticsearchMajorVersion = ""
 	public List<String> gcpHotfixURLs = new ArrayList<String>()
 	public boolean glowrootEnabled = false
 	public List<String> hotfixURLs = new ArrayList<String>()
