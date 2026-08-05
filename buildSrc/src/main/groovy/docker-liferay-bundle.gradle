@@ -145,7 +145,13 @@ Closure<FileCollection> copyLiferayLicenseFromDXPImage = {
 
 	println "Attempting to copy trial license from ${latestImageName}"
 
-	waitForCommand("docker create --name=${temporaryContainerName} --volume=${temporaryVolumeName}:/opt/liferay/deploy ${latestImageName}")
+	String relativeMountDir = "deploy"
+
+	if (latestImageName.contains(":latest")) {
+		relativeMountDir = "osgi/modules"
+	}
+
+	waitForCommand("docker create --name=${temporaryContainerName} --volume=${temporaryVolumeName}:/opt/liferay/${relativeMountDir} ${latestImageName}")
 
 	File modulesDir = file("${rootProject.projectDir}/configs/common/osgi/modules")
 
