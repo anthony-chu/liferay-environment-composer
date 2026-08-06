@@ -372,6 +372,12 @@ _checkReleasesJsonFileURL() {
 	fi
 }
 
+_showReleasesJsonFile() {
+	_checkReleasesJsonFile
+
+	jq '.' "${RELEASES_JSON_FILE}"
+}
+
 #
 # Helper functions to list information
 #
