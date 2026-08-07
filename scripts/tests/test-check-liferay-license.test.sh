@@ -24,6 +24,14 @@ _assert_attempt_copy_license_from_image() {
 	done
 }
 
+_getLatestTargetPlatformVersion() {
+	local year
+
+	year="$(date +%Y)"
+
+	_lec fn _showReleasesJsonFile | jq --arg year "$year" -r '.[] | select(.productGroupVersion | startswith($year)) | .targetPlatformVersion' | sort -V | tail -n 1
+}
+
 setup_file() {
 	BATS_TEST_NAME_PREFIX="Check Liferay license for DXP version: "
 	export BATS_TEST_NAME_PREFIX
@@ -58,10 +66,16 @@ teardown() {
 	_assert_attempt_copy_license_from_image "2026.q1.6-lts" "latest"
 }
 
-@test "2026.Q2.0" {
-	_test_check_for_liferay_license "dxp-2026.q2.0"
+@test "Latest Quarterly Release" {
+	local latestTargetPlatformVersion
+	latestTargetPlatformVersion="$(_getLatestTargetPlatformVersion)"
 
-	_assert_attempt_copy_license_from_image "2026.q2.0"
+	local latestReleaseKey
+	latestReleaseKey="$(_lec fn _listReleases | grep "${latestTargetPlatformVersion}")"
+
+	_test_check_for_liferay_license "${latestReleaseKey}"
+
+	_assert_attempt_copy_license_from_image "${latestTargetPlatformVersion}"
 
 	refute_line "Attempting to copy trial license from liferay/dxp:latest"
 }
