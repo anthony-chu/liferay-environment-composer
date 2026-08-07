@@ -8,6 +8,8 @@ import groovy.xml.slurpersupport.GPathResult
 import java.nio.file.Path
 import java.nio.file.Paths
 
+import java.util.regex.Matcher
+
 project.plugins.apply "docker-common"
 
 configurations {
@@ -115,6 +117,40 @@ Closure<String> getLatestImageNameLocal = {
 	return getLatestImageName(dxpImageNames)
 }
 
+Closure<Boolean> isLicenseInModulesDir = {
+	String imageName ->
+
+	if (imageName.endsWith(":latest")) {
+		return true
+	}
+
+	Matcher matcher = (imageName =~ /:(\d+)\.q(\d+)\.(\d+)/)
+
+	if (!matcher.find()) {
+		return false
+	}
+
+	int year = Integer.parseInt(matcher.group(1))
+
+	if (year < 2026) {
+		return false
+	}
+
+	int quarter = Integer.parseInt(matcher.group(2))
+
+	if ((year == 2026) && (quarter < 2)) {
+		return false
+	}
+
+	int patch = Integer.parseInt(matcher.group(3))
+
+	if ((year == 2026) && (quarter == 2) && (patch < 9)) {
+		return false
+	}
+
+	return true
+}
+
 Closure<FileCollection> copyLiferayLicenseFromDXPImage = {
 	String imageName, boolean pullImage = false ->
 
@@ -145,11 +181,7 @@ Closure<FileCollection> copyLiferayLicenseFromDXPImage = {
 
 	println "Attempting to copy trial license from ${latestImageName}"
 
-	String relativeMountDir = "deploy"
-
-	if (latestImageName.contains(":latest")) {
-		relativeMountDir = "osgi/modules"
-	}
+	String relativeMountDir = isLicenseInModulesDir(latestImageName) ? "osgi/modules" : "deploy"
 
 	waitForCommand("docker create --name=${temporaryContainerName} --volume=${temporaryVolumeName}:/opt/liferay/${relativeMountDir} ${latestImageName}")
 
