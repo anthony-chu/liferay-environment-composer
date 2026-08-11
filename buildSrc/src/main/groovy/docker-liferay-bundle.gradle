@@ -193,8 +193,10 @@ Closure<FileCollection> copyLiferayLicenseFromDXPImage = {
 	catch (exception) {
 		throw new GradleException("Unable to find trial license in /opt/liferay/${relativeMountDir} from ${latestImageName}")
 	}
-	waitForCommand("docker rm ${temporaryContainerName}")
-	waitForCommand("docker volume rm ${config.namespace}-license")
+	finally {
+		waitForCommand("docker rm ${temporaryContainerName}")
+		waitForCommand("docker volume rm ${config.namespace}-license")
+	}
 
 	return project.fileTree("configs") {
 		include "**/osgi/modules/*.xml"
