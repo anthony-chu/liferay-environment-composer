@@ -24,7 +24,7 @@ ENV ACCEPT_EULA=Y
 ENV MSSQL_SA_PASSWORD=Liferay123
 ENV PATH="${PATH}:/home/mssql/sqlpackage"
 
-COPY --chown=mssql:mssql --chmod=a+x conf/entrypoint.sh /init/
+COPY --chown=mssql:mssql --chmod=0755 conf/entrypoint.sh /init/
 COPY --chown=mssql:mssql conf/*.sql /init/
 
 ENTRYPOINT ["/bin/bash", "/init/entrypoint.sh"]

@@ -4,4 +4,4 @@ FROM icr.io/db2_community/db2:${DB2_VERSION}
 
 RUN mkdir /var/custom
 
-COPY --chmod=a+x conf/* /var/custom
+COPY --chmod=0755 conf/* /var/custom
