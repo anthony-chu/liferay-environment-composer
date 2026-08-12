@@ -124,25 +124,25 @@ Closure<Boolean> isLicenseInModulesDir = {
 		return true
 	}
 
-	Matcher matcher = (imageName =~ /:(\d+)\.q(\d+)\.(\d+)/)
+	Matcher matcher = (imageName =~ /:(?<year>\d+)\.q(?<quarter>\d+)\.(?<patch>\d+)/)
 
 	if (!matcher.find()) {
 		return false
 	}
 
-	int year = Integer.parseInt(matcher.group(1))
+	int year = Integer.parseInt(matcher.group("year"))
 
 	if (year < 2026) {
 		return false
 	}
 
-	int quarter = Integer.parseInt(matcher.group(2))
+	int quarter = Integer.parseInt(matcher.group("quarter"))
 
 	if ((year == 2026) && (quarter < 2)) {
 		return false
 	}
 
-	int patch = Integer.parseInt(matcher.group(3))
+	int patch = Integer.parseInt(matcher.group("patch"))
 
 	if ((year == 2026) && (quarter == 2) && (patch < 9)) {
 		return false
