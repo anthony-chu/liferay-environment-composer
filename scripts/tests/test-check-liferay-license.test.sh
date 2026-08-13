@@ -4,6 +4,7 @@ load helpers/setup
 
 _test_check_for_liferay_license() {
 	local liferayWorkspaceProduct=${1}
+	local liferayLicenseCheckImagesProperty=${2}
 
 	_debug "RUNNING ${BATS_TEST_NAME}"
 
@@ -11,7 +12,7 @@ _test_check_for_liferay_license() {
 
 	rm -f configs/common/osgi/modules/*.xml
 
-	run ./gradlew checkForLiferayLicense
+	run ./gradlew checkForLiferayLicense "${liferayLicenseCheckImagesProperty}"
 
 	assert_success
 }
@@ -42,17 +43,6 @@ setup_file() {
 setup() {
 	common_setup
 
-	local dxpDockerImages=()
-	local dxpDockerImage
-
-	while IFS= read -r dxpDockerImage; do
-		dxpDockerImages+=("${dxpDockerImage}")
-	done < <(docker image ls --filter reference="liferay/dxp" --format "{{.Repository}}:{{.Tag}}")
-
-	if [[ ${#dxpDockerImages[@]} -gt 0 ]]; then
-		docker rmi "${dxpDockerImages[@]}"
-	fi
-
 	_writeProperty "lr.docker.environment.service.enabled[liferay]" "true"
 }
 
@@ -61,7 +51,9 @@ teardown() {
 }
 
 @test "2026.Q1.6 LTS" {
-	_test_check_for_liferay_license "dxp-2026.q1.6-lts"
+	local targetPlatformVersion="2026.q1.6-lts"
+
+	_test_check_for_liferay_license "dxp-2026.q1.6-lts" "-Pliferay.license.check.images=liferay/dxp:${targetPlatformVersion},liferay/dxp:latest"
 
 	_assert_attempt_copy_license_from_image "2026.q1.6-lts" "latest"
 }
@@ -73,7 +65,7 @@ teardown() {
 	local latestReleaseKey
 	latestReleaseKey="$(_lec fn _listReleases | grep "${latestTargetPlatformVersion}")"
 
-	_test_check_for_liferay_license "${latestReleaseKey}"
+	_test_check_for_liferay_license "${latestReleaseKey}" "-Pliferay.license.check.images=liferay/dxp:${latestTargetPlatformVersion}"
 
 	_assert_attempt_copy_license_from_image "${latestTargetPlatformVersion}"
 
