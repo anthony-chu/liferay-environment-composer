@@ -229,15 +229,21 @@ tasks.register("checkForLiferayLicense") {
 			isValidLicenseFile(it)
 		}
 
-		List<String> images = [project.gradle.liferayWorkspace.dockerImageLiferay, "liferay/dxp:*.q*", "liferay/dxp:latest"]
+		List<String> liferayLicenseCheckImages = [project.gradle.liferayWorkspace.dockerImageLiferay, "liferay/dxp:*.q*", "liferay/dxp:latest"]
 
-		for (image in images) {
+		String liferayLicenseCheckImagesProperty = project.findProperty("liferay.license.check.images")
+
+		if (liferayLicenseCheckImagesProperty != null) {
+			liferayLicenseCheckImages = liferayLicenseCheckImagesProperty.split(",")
+		}
+
+		for (image in liferayLicenseCheckImages) {
 			if (Util.isEmpty(licenseXmlFileCollection)) {
 				licenseXmlFileCollection = copyLiferayLicenseFromDXPImage(image)
 			}
 		}
 
-		for (image in images) {
+		for (image in liferayLicenseCheckImages) {
 			if (Util.isEmpty(licenseXmlFileCollection) && !image.contains("*")) {
 				licenseXmlFileCollection = copyLiferayLicenseFromDXPImage(image, true)
 			}
