@@ -191,7 +191,7 @@ Closure<FileCollection> copyLiferayLicenseFromDXPImage = {
 		waitForCommand("docker run --rm -v ${temporaryVolumeName}:/source -v ${modulesDir.absolutePath}:/target alpine sh -c 'cp /source/trial-*.xml /target/'")
 	}
 	catch (exception) {
-		throw new GradleException("Unable to find trial license in /opt/liferay/${relativeMountDir} from ${latestImageName}")
+		println "Unable to find license in /opt/liferay/${relativeMountDir} from ${latestImageName}"
 	}
 	finally {
 		waitForCommand("docker rm ${temporaryContainerName}")
