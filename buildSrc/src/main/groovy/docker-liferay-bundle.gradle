@@ -198,6 +198,9 @@ Closure<FileCollection> copyLiferayLicenseFromDXPImage = {
 		if (stderrOutputString.contains("No such file or directory")) {
 			println "Unable to find license in /opt/liferay/${relativeMountDir} from ${latestImageName}"
 		}
+		else {
+			println stderrOutputString
+		}
 	}
 	finally {
 		waitForCommand("docker rm ${temporaryContainerName}")
