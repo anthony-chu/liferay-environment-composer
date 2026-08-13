@@ -55,7 +55,7 @@ teardown() {
 
 	_test_check_for_liferay_license "dxp-2026.q1.6-lts" "-Pliferay.license.check.images=liferay/dxp:${targetPlatformVersion},liferay/dxp:latest"
 
-	_assert_attempt_copy_license_from_image "2026.q1.6-lts" "latest"
+	_assert_attempt_copy_license_from_image "${targetPlatformVersion}" "latest"
 }
 
 @test "Latest Quarterly Release" {
