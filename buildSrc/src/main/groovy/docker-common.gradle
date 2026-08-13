@@ -428,7 +428,7 @@ ext {
 	}
 
 	waitForCommand = {
-		String command, File cwd = null, OutputStream outputStream = null ->
+		String command, File cwd = null, OutputStream outputStream = null, OutputStream errorStream = null ->
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
 
@@ -441,6 +441,10 @@ ext {
 			}
 			else {
 				standardOutput byteArrayOutputStream
+			}
+
+			if (errorStream != null) {
+				errorOutput errorStream
 			}
 
 			if (cwd != null) {
