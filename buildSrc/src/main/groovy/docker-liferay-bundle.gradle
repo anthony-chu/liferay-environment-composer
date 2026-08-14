@@ -187,13 +187,13 @@ Closure<FileCollection> copyLiferayLicenseFromDXPImage = {
 
 	File modulesDir = file("${rootProject.projectDir}/configs/common/osgi/modules")
 
-	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	ByteArrayOutputStream errorByteArrayOutputStream = new ByteArrayOutputStream();
 
 	try {
-		waitForCommand("docker run --rm -v ${temporaryVolumeName}:/source -v ${modulesDir.absolutePath}:/target alpine sh -c 'cp /source/trial-*.xml /target/'", null, null, byteArrayOutputStream)
+		waitForCommand("docker run --rm -v ${temporaryVolumeName}:/source -v ${modulesDir.absolutePath}:/target alpine sh -c 'cp /source/trial-*.xml /target/'", null, null, errorByteArrayOutputStream)
 	}
 	catch (exception) {
-		String stderrOutputString = byteArrayOutputStream.toString().trim()
+		String stderrOutputString = errorByteArrayOutputStream.toString().trim()
 
 		if (stderrOutputString.contains("No such file or directory")) {
 			println "Unable to find license in /opt/liferay/${relativeMountDir} from ${latestImageName}"
