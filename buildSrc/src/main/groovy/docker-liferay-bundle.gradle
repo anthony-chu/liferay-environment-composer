@@ -196,10 +196,10 @@ Closure<FileCollection> copyLiferayLicenseFromDXPImage = {
 		String stderrOutputString = errorByteArrayOutputStream.toString().trim()
 
 		if (stderrOutputString.contains("No such file or directory")) {
-			println "Unable to find license in /opt/liferay/${relativeMountDir} from ${latestImageName}"
+			logger.warn("Unable to find license in /opt/liferay/${relativeMountDir} from ${latestImageName}")
 		}
 		else {
-			println stderrOutputString
+			logger.warn(stderrOutputString)
 		}
 	}
 	finally {
